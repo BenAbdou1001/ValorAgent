@@ -12,8 +12,20 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        'barlow-condensed': ['"Barlow Condensed"', 'sans-serif'],
+      },
+      keyframes: {
+        typewriterFast: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' }
+        }
+      },
+      animation: {
+        'typewriter-fast': 'typewriterFast 1s steps(10) forwards'
+      }
     },
   },
-  plugins: [],
+  plugins: [require('daisyui')],
 };
 export default config;
