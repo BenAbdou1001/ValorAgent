@@ -4,7 +4,7 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip
 import { BarChartData } from '@/types/index'
 import { BarChartProps } from '@/types/index'
 import { getDataKey } from '@/utils/index'
-import { COLORS } from '../../../constatns/index'
+import { COLORS } from '../../../constants/index'
 
 export function BarChart({ title, data }: BarChartProps) {
   const dataKey = getDataKey(data);

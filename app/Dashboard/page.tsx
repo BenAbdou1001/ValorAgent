@@ -1,10 +1,13 @@
+import React from 'react'
 import { DashboardClient } from './components/DashboardClient'
 import { Card } from './components/Card'
 import { Chart } from './components/Chart'
 import { BarChart } from './components/BarChart'
-import type { DashboardData } from '@types'
-import { formatDecimal, roundNumber } from '@utils/index'
-
+import { DashboardData, GameMode,DashboardPageProps } from '../../types/index'
+import { formatDecimal, roundNumber } from '../../utils/index'
+import { AgentsContent } from './components/AgentsContent'
+import { WeaponsContent } from './components/WeaponsContent'
+import { MapsContent } from './components/MapContent'
 // This data fetching would typically be done from a database or API
 const fetchDashboardData = (): DashboardData => {
   return {
@@ -31,11 +34,37 @@ const fetchDashboardData = (): DashboardData => {
       { map: 'Split', winRate: 50 },
       { map: 'Icebox', winRate: 49 },
     ],
+    gameModeStats: {
+      competitive: {
+        averageKills: 15.3,
+        averageDeaths: 14.1,
+        averageAssists: 4.2,
+        averageScore: 230,
+      },
+      deathmatch: {
+        averageKills: 22.5,
+        averageDeaths: 18.7,
+        averageAssists: 0,
+        averageScore: 280,
+      },
+      teamDeathmatch: {
+        averageKills: 18.9,
+        averageDeaths: 16.2,
+        averageAssists: 2.8,
+        averageScore: 250,
+      },
+      spikeRush: {
+        averageKills: 10.5,
+        averageDeaths: 9.8,
+        averageAssists: 3.1,
+        averageScore: 180,
+      },
+    },
     averageMatchStats: {
-      averageKills: 15.3,
-      averageDeaths: 14.1,
-      averageAssists: 4.2,
-      averageScore: 230,
+      averageKills: 16.5,
+      averageDeaths: 14.7,
+      averageAssists: 3.5,
+      averageScore: 240,
     },
     rankDistribution: [
       { rank: 'Iron', percentage: 15 },
@@ -52,7 +81,6 @@ const fetchDashboardData = (): DashboardData => {
 
 export default function DashboardPage() {
   const dashboardData = fetchDashboardData()
-
   const renderStatCard = (title: string, value: string | number) => (
     <Card
       title={title}
@@ -64,26 +92,39 @@ export default function DashboardPage() {
     />
   )
 
-  return (
-    <DashboardClient>
+  const renderHomeContent = (gameMode: GameMode) => (
+    <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {renderStatCard("Avg. Kills", formatDecimal(dashboardData.averageMatchStats.averageKills))}
-        {renderStatCard("Avg. Deaths", formatDecimal(dashboardData.averageMatchStats.averageDeaths))}
-        {renderStatCard("Avg. Assists", formatDecimal(dashboardData.averageMatchStats.averageAssists))}
-        {renderStatCard("Avg. Score", roundNumber(dashboardData.averageMatchStats.averageScore))}
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {renderStatCard("Avg. Kills", formatDecimal(dashboardData.averageMatchStats.averageKills))}
-        {renderStatCard("Avg. Deaths", formatDecimal(dashboardData.averageMatchStats.averageDeaths))}
+        {renderStatCard("Avg. Kills", formatDecimal(dashboardData.gameModeStats[gameMode].averageKills))}
+        {renderStatCard("Avg. Deaths", formatDecimal(dashboardData.gameModeStats[gameMode].averageDeaths))}
+        {renderStatCard("Avg. Assists", formatDecimal(dashboardData.gameModeStats[gameMode].averageAssists))}
+        {renderStatCard("Avg. Score", roundNumber(dashboardData.gameModeStats[gameMode].averageScore))}
       </div>
 
-      {/* Charts */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Chart title="Agent Pick Rates" data={dashboardData.agentPickRates} />
         <Chart title="Weapon Usage" data={dashboardData.weaponUsage} />
         <BarChart title="Map Win Rates" data={dashboardData.mapWinRates} />
         <BarChart title="Rank Distribution" data={dashboardData.rankDistribution} />
       </div>
-    </DashboardClient>
+    </>
+  )
+
+  const gameModes: GameMode[] = ['competitive', 'deathmatch', 'teamDeathmatch', 'spikeRush']
+  const homeContentByMode: { [key in GameMode]: React.ReactNode } = {
+    competitive: renderHomeContent('competitive'),
+    deathmatch: renderHomeContent('deathmatch'),
+    teamDeathmatch: renderHomeContent('teamDeathmatch'),
+    spikeRush: renderHomeContent('spikeRush'),
+  }
+
+  return (
+    <DashboardClient
+      homeContentByMode={homeContentByMode}
+      agentsContent={<AgentsContent />}
+      weaponsContent={<WeaponsContent />}
+      mapsContent={<MapsContent />}
+    />
   )
 }
+

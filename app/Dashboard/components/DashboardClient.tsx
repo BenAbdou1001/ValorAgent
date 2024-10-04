@@ -1,23 +1,66 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Search, Filter, Menu, X } from 'lucide-react'
-import { SideNavigation } from './SideNavigation'
-import { FILTER_OPTIONS } from '../../../constatns/index'
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation'; // Import useSearchParams from Next.js
+import { Search, Filter, Menu, X } from 'lucide-react';
+import { SideNavigation } from './SideNavigation';
+import { FILTER_OPTIONS } from '../../../constants/index';
+import { GameMode } from '../../../types/index';
 
 interface DashboardClientProps {
-  children: React.ReactNode;
+  homeContentByMode: {
+    [key in GameMode]: React.ReactNode;
+  };
+  agentsContent: React.ReactNode;
+  weaponsContent: React.ReactNode;
+  mapsContent: React.ReactNode;
 }
 
-export function DashboardClient({ children }: DashboardClientProps) {
-  const [activeTab, setActiveTab] = useState('home')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filter, setFilter] = useState('all_time')
-  const [isSideNavOpen, setIsSideNavOpen] = useState(true)
+export function DashboardClient({ homeContentByMode, agentsContent, weaponsContent, mapsContent }: DashboardClientProps) {
+  const searchParams = useSearchParams(); // Use the useSearchParams hook
+  const query = searchParams?.get('query') || ''; // Get the query parameter
+  const [activeTab, setActiveTab] = useState('home');
+  const [activeGameMode, setActiveGameMode] = useState<GameMode>('competitive');
+  const [searchQuery, setSearchQuery] = useState(query); // Initialize with query param
+  const [accountName, setAccountName] = useState('');
+  const [filter, setFilter] = useState('all_time');
+  const [isSideNavOpen, setIsSideNavOpen] = useState(true);
+
+  useEffect(() => {
+    // Update searchQuery whenever the router's query changes
+    setSearchQuery(query);
+    
+    // Assuming the accountName is passed as a query parameter called "accountName"
+    const nameFromQuery = searchParams?.get('accountName') || '';
+    setAccountName(nameFromQuery);
+}, [query]); // Dependency on query
+
 
   const toggleSideNav = () => {
-    setIsSideNavOpen(!isSideNavOpen)
-  }
+    setIsSideNavOpen(!isSideNavOpen);
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'home':
+        return (
+          <>
+            <div className="mb-6">
+              <GameModeTabs activeGameMode={activeGameMode} setActiveGameMode={setActiveGameMode} />
+            </div>
+            {homeContentByMode[activeGameMode]}
+          </>
+        );
+      case 'agents':
+        return agentsContent;
+      case 'weapons':
+        return weaponsContent;
+      case 'maps':
+        return mapsContent;
+      default:
+        return homeContentByMode[activeGameMode];
+    }
+  };
 
   return (
     <div className="flex h-screen bg-[#1a0a0e] font-['Barlow_Condensed',sans-serif]">
@@ -26,7 +69,6 @@ export function DashboardClient({ children }: DashboardClientProps) {
       `}</style>
       <SideNavigation isOpen={isSideNavOpen} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Main Content */}
       <main className="flex-1 p-8 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <button
@@ -62,9 +104,38 @@ export function DashboardClient({ children }: DashboardClientProps) {
             </div>
           </div>
         </div>
-        <h2 className="text-4xl font-bold text-[#fffbf5] mb-6 uppercase tracking-wide">Welcome back, Agent!</h2>
-        {children}
+        <h2 className="text-4xl font-bold text-[#fffbf5] mb-6 uppercase tracking-wide">
+        Welcome back, {accountName || "Agent"}!
+        </h2>
+        {renderContent()}
       </main>
     </div>
-  )
+  );
+}
+
+interface GameModeTabsProps {
+  activeGameMode: GameMode;
+  setActiveGameMode: (gameMode: GameMode) => void;
+}
+
+function GameModeTabs({ activeGameMode, setActiveGameMode }: GameModeTabsProps) {
+  const gameModes: GameMode[] = ['competitive', 'deathmatch', 'teamDeathmatch', 'spikeRush'];
+
+  return (
+    <div className="flex space-x-2">
+      {gameModes.map((mode) => (
+        <button
+          key={mode}
+          onClick={() => setActiveGameMode(mode)}
+          className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ease-in-out ${
+            activeGameMode === mode
+              ? 'bg-[#fd4556] text-[#fffbf5]'
+              : 'bg-[#171717] text-[#fffbf5] hover:bg-[#53212b]'
+          }`}
+        >
+          {mode.charAt(0).toUpperCase() + mode.slice(1)}
+        </button>
+      ))}
+    </div>
+  );
 }
