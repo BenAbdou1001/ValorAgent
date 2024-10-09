@@ -106,12 +106,12 @@ export function DashboardClient({
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {
-          data.agentPickRates && data.agentPickRates.length > 0 ? (
-            <Chart title="Agent Pick Rates" data={data.agentPickRates} />
-          ) : loading ? (
+          loading ? (
             <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
               <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
             </div>
+          ) : data.agentPickRates && data.agentPickRates.length > 0 ? (
+            <Chart title="Agent Pick Rates" data={data.agentPickRates} />
           ) : (
             <div className="bg-[#171717] p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Agent Pick Rates</h3>
@@ -119,13 +119,13 @@ export function DashboardClient({
             </div>
           )
         }
-    {
-          data.weaponUsage && data.weaponUsage.length > 0 ? (
-            <Chart title="Weapon Usage" data={data.weaponUsage} />
-          ) : loading ? (
+        {
+          loading ? (
             <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
               <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
             </div>
+          ) : data.weaponUsage && data.weaponUsage.length > 0 ? (
+            <Chart title="Weapon Usage" data={data.weaponUsage} />
           ) : (
             <div className="bg-[#171717] p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Weapon Usage</h3>
@@ -133,18 +133,20 @@ export function DashboardClient({
             </div>
           )
         }
-        {data.mapWinRates && data.mapWinRates.length > 0 ? (
-          <BarChart title="Map Win Rates" data={data.mapWinRates} />
-        ) : loading ? (
-          <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
-            <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
-          </div>
-        ) : (
-          <div className="bg-[#171717] p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Map Win Rates</h3>
-            <p className="text-[#fffbf5]">No map win rate data available</p>
-          </div>
-        )}
+        {
+          loading ? (
+            <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
+              <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
+            </div>
+          ) : data.mapWinRates && data.mapWinRates.length > 0 ? (
+            <BarChart title="Map Win Rates" data={data.mapWinRates} />
+          ) : (
+            <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Map Win Rates</h3>
+              <p className="text-[#fffbf5]">No map win rate data available</p>
+            </div>
+          )
+        }
         {
           loading ? (
             <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
