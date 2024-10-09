@@ -41,7 +41,7 @@ export function WeaponsContent() {
       </div>
     ) : (
       <div className='h-full w-full flex'>
-      <span className="loading loading-ring loading-lg justify-center items-center m-auto"></span>
+      <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
       </div>
     )
   );

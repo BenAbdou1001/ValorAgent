@@ -22,6 +22,7 @@ export function DashboardClient({
   const query = searchParams?.get('query') || ''; // Get the query parameter
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('home');
+  
   const [filters, setFilters] = useState<FilterOptions>(initialFilters);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     agentPickRates: [],
@@ -44,6 +45,7 @@ export function DashboardClient({
   const [accountName, setAccountName] = useState(''); // New state for accountName
   const [region, setRegion] = useState('');
   const [tagname, setTagname] = useState('');
+  const [loading , setLoading] = useState(true);
 
   const toggleSideNav = () => {
     setIsSideNavOpen(!isSideNavOpen);
@@ -58,6 +60,7 @@ export function DashboardClient({
     setRegion(regionFromQuery);
     setTagname(tagFromQuery);
     setFilters(newFilters);
+    setLoading(true);
 
     try {
 
@@ -67,8 +70,10 @@ export function DashboardClient({
       }
       const newDashboardData = processApiData(matchData, newFilters, nameFromQuery, tagFromQuery);
       setDashboardData(newDashboardData);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching updated match data:', error);
+      setLoading(false);
       // Handle error (e.g., show error message to user)
     }
   };
@@ -78,7 +83,13 @@ export function DashboardClient({
       title={title}
       content={
         <div className="flex items-center justify-center">
-          <span className="text-3xl font-bold text-[#fd4556]">{value}</span>
+          {loading ? (
+            <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
+          ) : value ? (
+            <span className="text-3xl font-bold text-[#fd4556]">{value}</span>
+          ) : (
+            <span className="text-[#fffbf5]">No data available</span>
+          )}
         </div>
       }
     />
@@ -97,6 +108,10 @@ export function DashboardClient({
         {
           data.agentPickRates && data.agentPickRates.length > 0 ? (
             <Chart title="Agent Pick Rates" data={data.agentPickRates} />
+          ) : loading ? (
+            <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
+              <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
+            </div>
           ) : (
             <div className="bg-[#171717] p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Agent Pick Rates</h3>
@@ -104,21 +119,26 @@ export function DashboardClient({
             </div>
           )
         }
-        {
-          data.weaponUsage && data.weaponUsage.length > 0 ?
-          (
+    {
+          data.weaponUsage && data.weaponUsage.length > 0 ? (
             <Chart title="Weapon Usage" data={data.weaponUsage} />
-          )
-          : (
+          ) : loading ? (
+            <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
+              <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
+            </div>
+          ) : (
             <div className="bg-[#171717] p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Weapon Usage</h3>
               <p className="text-[#fffbf5]">No weapon usage data available</p>
             </div>
           )
         }
-        {data.mapWinRates && data.mapWinRates.length > 0 ? 
-        (
-        <BarChart title="Map Win Rates" data={data.mapWinRates} />
+        {data.mapWinRates && data.mapWinRates.length > 0 ? (
+          <BarChart title="Map Win Rates" data={data.mapWinRates} />
+        ) : loading ? (
+          <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
+            <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
+          </div>
         ) : (
           <div className="bg-[#171717] p-6 rounded-lg shadow-md">
             <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Map Win Rates</h3>
@@ -126,17 +146,23 @@ export function DashboardClient({
           </div>
         )}
         {
-          data.playerStats.headshot_percentage && data.playerStats.bodyshot_percentage && data.playerStats.legshot_percentage ? (
-            <HeadshotPercentageChart
-            headshotPercentage={data.playerStats.headshot_percentage}
-            bodyshotPercentage={data.playerStats.bodyshot_percentage}
-            legshotPercentage={data.playerStats.legshot_percentage}
-          />
-          ) : (
-            <div className="bg-[#171717] p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Shot Distribution</h3>
-              <p className="text-[#fffbf5]">No shot distribution data available</p>
+          loading ? (
+            <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
+              <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
             </div>
+          ) : (
+            data.playerStats.headshot_percentage && data.playerStats.bodyshot_percentage && data.playerStats.legshot_percentage ? (
+              <HeadshotPercentageChart
+                headshotPercentage={data.playerStats.headshot_percentage}
+                bodyshotPercentage={data.playerStats.bodyshot_percentage}
+                legshotPercentage={data.playerStats.legshot_percentage}
+              />
+            ) : (
+              <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Shot Distribution</h3>
+                <p className="text-[#fffbf5]">No shot distribution data available</p>
+              </div>
+            )
           )
         }
 
@@ -165,7 +191,7 @@ export function DashboardClient({
   useEffect(() => {
     const fetchData = async () => {
       setSearchQuery(query);
-
+      setLoading(true);
       const nameFromQuery = searchParams?.get('accountName') || '';
       const regionFromQuery = searchParams?.get('region') || '';
       const tagFromQuery = searchParams?.get('tagName') || '';
@@ -177,8 +203,10 @@ export function DashboardClient({
         const matchData = await fetchMatchData(regionFromQuery, nameFromQuery, tagFromQuery);
         const initialDashboardData = processApiData(matchData, initialFilters, nameFromQuery, tagFromQuery);
         setDashboardData(initialDashboardData);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching initial match data:', error);
+        setLoading(false);
       }
     };
 

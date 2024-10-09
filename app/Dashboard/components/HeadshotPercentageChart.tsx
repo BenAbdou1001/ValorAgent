@@ -41,9 +41,9 @@ export function HeadshotPercentageChart({ headshotPercentage, bodyshotPercentage
             formatter={(value: number) => `${value}%`}
           />
           <Legend
-            layout="vertical"
-            verticalAlign="middle"
-            align="right"
+            layout="horizontal"
+            verticalAlign="bottom"
+            align="center"
             wrapperStyle={{ color: '#fffbf5' }}
           />
         </PieChart>

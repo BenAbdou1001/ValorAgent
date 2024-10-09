@@ -25,8 +25,17 @@ export function Chart({ title, data }: ChartProps) {
               <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip contentStyle={{ background: '#171717', border: 'none', fontFamily: "'Barlow Condensed', sans-serif" }} />
-          <Legend wrapperStyle={{ color: '#fffbf5', fontFamily: "'Barlow Condensed', sans-serif" }} />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#171717', border: '1px solid #53212b' }}
+            itemStyle={{ color: '#fffbf5', fontFamily: "'Barlow Condensed', sans-serif" }}
+            formatter={(value: number) => `${value}%`}
+          />
+          <Legend
+            layout="horizontal"
+            verticalAlign="bottom"
+            align="center"
+            wrapperStyle={{ color: '#fffbf5', fontFamily: "'Barlow Condensed', sans-serif" }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
