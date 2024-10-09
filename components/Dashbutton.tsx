@@ -10,7 +10,7 @@ export const DashButton = () => {
   const [accountName, setAccountName] = useState('');
   const [tagName, setTagName] = useState('');
   const [error, setError] = useState('');
-  const [accountData, setAccountData] = useState(null); // New state to store fetched data
+  const [accountData, setAccountData] = useState({}); // New state to store fetched data
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const router = useRouter();
 
@@ -31,10 +31,13 @@ export const DashButton = () => {
       
       if (data) {
         setAccountData(data); // Store the data in state  
+        console.log(data); // Log the fetched data instead of the state
         setIsLoading(false); // Stop loading
+        localStorage.setItem('accountData', JSON.stringify(data)); // Use 'data' directly to store in localStorage
+
         // Redirect to the dashboard with the data if needed
-        router.push(`/Dashboard?accountName=${accountName}&tagName=${tagName}`);
-      }
+        router.push(`/Dashboard?accountName=${accountName}&tagName=${tagName}&region=${data.accountInfo.region}`);
+      }      
     } catch (error) {
       setError('Error fetching account data. Please try again.'); // Set error message
       console.error('Error fetching account data:', error); // Log error for debugging

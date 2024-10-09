@@ -1,20 +1,48 @@
-import { AgentCard } from './AgentCard'
+'use client'
 
-const agents = [
-  'Astra', 'Breach', 'Brimstone', 'Chamber', 'Cypher', 'Deadlock', 'Fade', 'Gekko', 'Harbor', 'Iso', 
-  'Jett', 'KAY/O', 'Killjoy', 'Neon', 'Omen', 'Phoenix', 'Raze', 'Reyna', 'Sage', 'Skye', 
-  'Sova', 'Viper', 'Yoru', 'Clove', 'Vyse'
-]
+import React, { useState, useEffect } from 'react';
+import { ValorantCard } from './ValorantCard';
+import { ValorantModal } from './ValorantModal';
 
 export function AgentsContent() {
+  const [agents, setAgents] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState(null);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const response = await fetch('/api/valorant-data?type=agents');
+      const data = await response.json();
+      setAgents(data.data);
+    };
+    fetchAgents();
+  }, []);
+
   return (
-    <div className="bg-[#1a0a0e] p-6 rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-[#fffbf5] mb-6">Agents</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        {agents.map((agent) => (
-          <AgentCard key={agent} name={agent} />
-        ))}
+    agents.length === 0 ? (
+      <div className="p-4">
+        <h2 className="text-2xl font-bold text-white mb-4">Agents</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {agents.map((agent: any) => (
+            <ValorantCard
+              key={agent.uuid}
+              name={agent.displayName}
+              image={agent.fullPortrait}
+              onClick={() => setSelectedAgent(agent)}
+            />
+          ))}
+        </div>
+        {selectedAgent && (
+          <ValorantModal
+            data={selectedAgent}
+            type="agent"
+            onClose={() => setSelectedAgent(null)}
+          />
+        )}
       </div>
-    </div>
-  )
+    ) : (
+      <div className='h-full w-full flex'>
+        <span className="loading loading-ring loading-lg justify-center items-center m-auto"></span>
+      </div>
+    )
+  );
 }

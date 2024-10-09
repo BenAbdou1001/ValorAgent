@@ -16,7 +16,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const accountInfo = {
       name: data.data.name, // Adjust according to actual structure
       account_level: data.data.account_level, // Adjust according to actual structure
-      region: data.data.region // Adjust according to actual structure
+      region: data.data.region, // Adjust according to actual structure
+      tag: data.data.tag // Adjust according to actual structure
     };
     console.log('External API response:', accountInfo);
     

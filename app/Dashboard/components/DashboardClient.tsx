@@ -1,66 +1,189 @@
-'use client';
+'use client'
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useSearchParams from Next.js
 import { Search, Filter, Menu, X } from 'lucide-react';
 import { SideNavigation } from './SideNavigation';
-import { FILTER_OPTIONS } from '../../../constants/index';
-import { GameMode } from '../../../types/index';
+import { FilterOptions, DashboardData, GameMode, TimeRange, DashboardClientProps, GameCount  } from '../../../types/index';
+import { processApiData, fetchMatchData, formatDecimal, roundNumber } from '../../../utils/index';
+import { Card } from './Card';
+import { Chart } from './Chart';
+import { BarChart } from './BarChart';
+import { LastMatchesCard } from './LastMatchesCard';
+import { AgentsContent } from './AgentsContent';
+import { WeaponsContent } from './WeaponsContent';
+import { MapsContent } from './MapContent';
+import { HeadshotPercentageChart } from './HeadshotPercentageChart';
 
-interface DashboardClientProps {
-  homeContentByMode: {
-    [key in GameMode]: React.ReactNode;
-  };
-  agentsContent: React.ReactNode;
-  weaponsContent: React.ReactNode;
-  mapsContent: React.ReactNode;
-}
-
-export function DashboardClient({ homeContentByMode, agentsContent, weaponsContent, mapsContent }: DashboardClientProps) {
+export function DashboardClient({
+  initialFilters
+}: DashboardClientProps) {
   const searchParams = useSearchParams(); // Use the useSearchParams hook
   const query = searchParams?.get('query') || ''; // Get the query parameter
+  const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('home');
-  const [activeGameMode, setActiveGameMode] = useState<GameMode>('competitive');
-  const [searchQuery, setSearchQuery] = useState(query); // Initialize with query param
-  const [accountName, setAccountName] = useState('');
-  const [filter, setFilter] = useState('all_time');
+  const [filters, setFilters] = useState<FilterOptions>(initialFilters);
+  const [dashboardData, setDashboardData] = useState<DashboardData>({
+    agentPickRates: [],
+    weaponUsage: [],
+    mapWinRates: [],
+    playerStats: {
+      averageKills: 0,
+      averageDeaths: 0,
+      averageAssists: 0,
+      averageScore: 0,
+      headshot_percentage: 0,
+      bodyshot_percentage: 0,
+      legshot_percentage: 0,
+    },
+    lastMatches: [],
+    gameModeStats: {},
+    rankDistribution: [],
+  });
   const [isSideNavOpen, setIsSideNavOpen] = useState(true);
-
-  useEffect(() => {
-    // Update searchQuery whenever the router's query changes
-    setSearchQuery(query);
-    
-    // Assuming the accountName is passed as a query parameter called "accountName"
-    const nameFromQuery = searchParams?.get('accountName') || '';
-    setAccountName(nameFromQuery);
-}, [query]); // Dependency on query
-
+  const [accountName, setAccountName] = useState(''); // New state for accountName
+  const [region, setRegion] = useState('');
+  const [tagname, setTagname] = useState('');
 
   const toggleSideNav = () => {
     setIsSideNavOpen(!isSideNavOpen);
   };
 
+  const handleFilterChange = async (key: keyof FilterOptions, value: GameMode | GameCount) => {
+    const newFilters = { ...filters, [key]: value };
+    const nameFromQuery = searchParams?.get('accountName') || '';
+    const regionFromQuery = searchParams?.get('region') || '';
+    const tagFromQuery = searchParams?.get('tagName') || '';
+    setAccountName(nameFromQuery);
+    setRegion(regionFromQuery);
+    setTagname(tagFromQuery);
+    setFilters(newFilters);
+
+    try {
+
+      const matchData = await fetchMatchData(regionFromQuery, nameFromQuery, tagFromQuery , newFilters.gameCount, newFilters.mode);
+      if (!matchData || matchData.length === 0) {
+        throw new Error('No match data available for the selected filters');
+      }
+      const newDashboardData = processApiData(matchData, newFilters, nameFromQuery, tagFromQuery);
+      setDashboardData(newDashboardData);
+    } catch (error) {
+      console.error('Error fetching updated match data:', error);
+      // Handle error (e.g., show error message to user)
+    }
+  };
+
+  const renderStatCard = (title: string, value: string | number) => (
+    <Card
+      title={title}
+      content={
+        <div className="flex items-center justify-center">
+          <span className="text-3xl font-bold text-[#fd4556]">{value}</span>
+        </div>
+      }
+    />
+  );
+
+  const renderHomeContent = (data: DashboardData) => (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {renderStatCard("Avg. Kills", formatDecimal(data.playerStats.averageKills))}
+        {renderStatCard("Avg. Deaths", formatDecimal(data.playerStats.averageDeaths))}
+        {renderStatCard("Avg. Assists", formatDecimal(data.playerStats.averageAssists))}
+        {renderStatCard("Avg. Score", roundNumber(data.playerStats.averageScore))}
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {
+          data.agentPickRates && data.agentPickRates.length > 0 ? (
+            <Chart title="Agent Pick Rates" data={data.agentPickRates} />
+          ) : (
+            <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Agent Pick Rates</h3>
+              <p className="text-[#fffbf5]">No agent pick rate data available</p>
+            </div>
+          )
+        }
+        {
+          data.weaponUsage && data.weaponUsage.length > 0 ?
+          (
+            <Chart title="Weapon Usage" data={data.weaponUsage} />
+          )
+          : (
+            <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Weapon Usage</h3>
+              <p className="text-[#fffbf5]">No weapon usage data available</p>
+            </div>
+          )
+        }
+        {data.mapWinRates && data.mapWinRates.length > 0 ? 
+        (
+        <BarChart title="Map Win Rates" data={data.mapWinRates} />
+        ) : (
+          <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Map Win Rates</h3>
+            <p className="text-[#fffbf5]">No map win rate data available</p>
+          </div>
+        )}
+        {
+          data.playerStats.headshot_percentage && data.playerStats.bodyshot_percentage && data.playerStats.legshot_percentage ? (
+            <HeadshotPercentageChart
+            headshotPercentage={data.playerStats.headshot_percentage}
+            bodyshotPercentage={data.playerStats.bodyshot_percentage}
+            legshotPercentage={data.playerStats.legshot_percentage}
+          />
+          ) : (
+            <div className="bg-[#171717] p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Shot Distribution</h3>
+              <p className="text-[#fffbf5]">No shot distribution data available</p>
+            </div>
+          )
+        }
+
+      </div>
+      <div className="mt-8">
+      <LastMatchesCard matches={data.lastMatches} />
+    </div>
+    </>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return (
-          <>
-            <div className="mb-6">
-              <GameModeTabs activeGameMode={activeGameMode} setActiveGameMode={setActiveGameMode} />
-            </div>
-            {homeContentByMode[activeGameMode]}
-          </>
-        );
+        return renderHomeContent(dashboardData);
       case 'agents':
-        return agentsContent;
+        return <><AgentsContent /></>;
       case 'weapons':
-        return weaponsContent;
+        return <><WeaponsContent /></>;
       case 'maps':
-        return mapsContent;
+        return <><MapsContent /></>;
       default:
-        return homeContentByMode[activeGameMode];
+        return renderHomeContent(dashboardData);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setSearchQuery(query);
+
+      const nameFromQuery = searchParams?.get('accountName') || '';
+      const regionFromQuery = searchParams?.get('region') || '';
+      const tagFromQuery = searchParams?.get('tagName') || '';
+      setAccountName(nameFromQuery);
+      setRegion(regionFromQuery);
+      setTagname(tagFromQuery);
+
+      try {
+        const matchData = await fetchMatchData(regionFromQuery, nameFromQuery, tagFromQuery);
+        const initialDashboardData = processApiData(matchData, initialFilters, nameFromQuery, tagFromQuery);
+        setDashboardData(initialDashboardData);
+      } catch (error) {
+        console.error('Error fetching initial match data:', error);
+      }
+    };
+
+    fetchData();
+  }, [query]);
 
   return (
     <div className="flex h-screen bg-[#1a0a0e] font-['Barlow_Condensed',sans-serif]">
@@ -69,6 +192,7 @@ export function DashboardClient({ homeContentByMode, agentsContent, weaponsConte
       `}</style>
       <SideNavigation isOpen={isSideNavOpen} activeTab={activeTab} setActiveTab={setActiveTab} />
 
+      {/* Main Content */}
       <main className="flex-1 p-8 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <button
@@ -79,63 +203,41 @@ export function DashboardClient({ homeContentByMode, agentsContent, weaponsConte
           </button>
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 bg-[#171717] text-[#fffbf5] border border-[#53212b] rounded-lg focus:outline-none focus:border-[#fd4556]"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Search className="absolute left-3 top-2.5 text-[#53212b]" />
+              <label htmlFor="game-mode-select" className="sr-only">Select Game Mode</label>
+              <select
+                id="game-mode-select"
+                className="pl-4 pr-10 py-2 bg-[#171717] text-[#fffbf5] border border-[#53212b] rounded-lg appearance-none focus:outline-none focus:border-[#fd4556]"
+                value={filters.mode}
+                onChange={(e) => handleFilterChange('mode', e.target.value as GameMode)}
+              >
+                <option value="competitive">Competitive</option>
+                <option value="deathmatch">Deathmatch</option>
+                <option value="unrated">Unrated</option>
+                <option value="swiftplay">Swiftplay</option
+                >
+              </select>
+              <Filter className="absolute right-3 top-2.5 text-[#53212b]" />
             </div>
             <div className="relative">
-              <label htmlFor="filter-select" className="sr-only">Filter Options</label>
-              <select
-                id="filter-select"
+            <label htmlFor="game-count-select" className="sr-only">Select Game Count</label>
+            <select
+                id="game-count-select"
                 className="pl-4 pr-10 py-2 bg-[#171717] text-[#fffbf5] border border-[#53212b] rounded-lg appearance-none focus:outline-none focus:border-[#fd4556]"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
+                value={filters.gameCount}
+                onChange={(e) => handleFilterChange('gameCount', parseInt(e.target.value) as GameCount)}
               >
-                {FILTER_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
-                ))}
+                <option value="1">Last Game</option>
+                <option value="5">Last 5 Games</option>
+                <option value="10">Last 10 Games</option>
               </select>
               <Filter className="absolute right-3 top-2.5 text-[#53212b]" />
             </div>
           </div>
         </div>
-        <h2 className="text-4xl font-bold text-[#fffbf5] mb-6 uppercase tracking-wide">
-        Welcome back, {accountName || "Agent"}!
-        </h2>
+
+        {/* Render dynamic content based on the active tab */}
         {renderContent()}
       </main>
-    </div>
-  );
-}
-
-interface GameModeTabsProps {
-  activeGameMode: GameMode;
-  setActiveGameMode: (gameMode: GameMode) => void;
-}
-
-function GameModeTabs({ activeGameMode, setActiveGameMode }: GameModeTabsProps) {
-  const gameModes: GameMode[] = ['competitive', 'deathmatch', 'teamDeathmatch', 'spikeRush'];
-
-  return (
-    <div className="flex space-x-2">
-      {gameModes.map((mode) => (
-        <button
-          key={mode}
-          onClick={() => setActiveGameMode(mode)}
-          className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors duration-200 ease-in-out ${
-            activeGameMode === mode
-              ? 'bg-[#fd4556] text-[#fffbf5]'
-              : 'bg-[#171717] text-[#fffbf5] hover:bg-[#53212b]'
-          }`}
-        >
-          {mode.charAt(0).toUpperCase() + mode.slice(1)}
-        </button>
-      ))}
     </div>
   );
 }

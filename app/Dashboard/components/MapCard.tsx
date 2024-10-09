@@ -1,14 +1,22 @@
 import Image from 'next/image'
 import {MapCardProps} from '../../../types/index'
 
-export function MapCard({ name }: MapCardProps) {
+
+interface ValorantCardProps {
+  name: string;
+  image: string;
+  onClick: () => void;
+}
+
+
+export function MapCard({ name, image, onClick }: ValorantCardProps) {
   return (
-    <div className="relative aspect-[16/9] overflow-hidden rounded-lg shadow-md group cursor-pointer">
-      <Image
-        src={`/placeholder.svg?height=225&width=400`}
+    <div className="relative aspect-[16/9] overflow-hidden rounded-lg shadow-md group cursor-pointer"
+         onClick={onClick} 
+          >
+      <img
+        src={image}
         alt={`${name} map`}
-        layout="fill"
-        objectFit="cover"
         className="transition-transform duration-300 group-hover:scale-110"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4 transition-all duration-300 group-hover:from-black/90">

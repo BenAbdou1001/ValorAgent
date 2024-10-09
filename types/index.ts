@@ -4,23 +4,43 @@ export interface ChartData {
   }
   
   export interface BarChartData {
-    [key: string]: string | number;
+    map: string;
+    winRate: number;
   }
-  
+  export interface DashboardClientProps {
+    initialFilters: FilterOptions;
+  } 
   export interface AverageMatchStats {
+    averageScore: number;
     averageKills: number;
     averageDeaths: number;
     averageAssists: number;
-    averageScore: number;
+    winRate: number;
+    wins:number,
+    losses:number
   }
   
   export interface DashboardData {
     agentPickRates: ChartData[];
     weaponUsage: ChartData[];
     mapWinRates: BarChartData[];
-    gameModeStats: GameModeStats;
-    averageMatchStats: AverageMatchStats;
-    rankDistribution: BarChartData[];
+    playerStats: {
+      averageKills: number;
+      averageDeaths: number;
+      averageAssists: number;
+      averageScore: number;
+      headshot_percentage: number;
+      bodyshot_percentage: number;
+      legshot_percentage: number;
+    };
+    lastMatches: { result: 'WON' | 'LOSS' }[];
+    gameModeStats: {
+      [key: string]: AverageMatchStats;
+    };
+    rankDistribution: {
+      rank: string;
+      count: number;
+    }[];
   }
 
   export interface CardProps {
@@ -45,13 +65,12 @@ export interface ChartData {
   }
   
   export interface GameModeStats {
-    competitive: AverageMatchStats;
-    deathmatch: AverageMatchStats;
-    teamDeathmatch: AverageMatchStats;
-    spikeRush: AverageMatchStats;
+    [key: string]: AverageMatchStats;
   }
 
-  export type GameMode = 'competitive' | 'deathmatch' | 'teamDeathmatch' | 'spikeRush';
+  export type GameMode = 'competitive' | 'deathmatch' | 'teamDeathmatch' | 'spikeRush' | 'unrated';
+
+  export type TimeRange = 'last_week' | 'last_month' | 'last_year' | 'all_time';
 
   export interface AgentCardProps {
     name: string;
@@ -71,4 +90,131 @@ export interface ChartData {
       region: string;
       account_level: number;
     }
+  }
+
+  export type GameCount = 1 | 5 | 10;
+
+export interface FilterOptions {
+  mode: GameMode;
+  gameCount: GameCount;
+}
+
+  export interface MatchData {
+    metadata: {
+      map: string;
+      game_start_patched: string;
+      mode: string;
+      season_id: string;
+    };
+    players: {
+      all_players: PlayerData[];
+    };
+    teams?: {
+      red: TeamData;
+      blue: TeamData;
+    };
+    rounds: RoundData[];
+  }
+  export interface PlayerStats {
+    kills: number;
+    deaths: number;
+    assists: number;
+    score: number;
+    bodyshots: number;
+    headshots: number;
+    legshots: number;
+  }
+  export interface PlayerData {
+    name: string;
+    tag: string;
+    team: string;
+    level: number;
+    character: string;
+    currenttier: number;
+    currenttier_patched: string;
+    player_card: string;
+    player_title: string;
+    party_id: string;
+    session_playtime: {
+      minutes: number;
+    };
+    behavior: {
+      afk_rounds: number;
+      friendly_fire: {
+        incoming: number;
+        outgoing: number;
+      };
+      rounds_in_spawn: number;
+    };
+    platform: {
+      type: string;
+    };
+    ability_casts: {
+      c_cast: number;
+      q_cast: number;
+      e_cast: number;
+      x_cast: number;
+    };
+    assets: {
+      card: {
+        small: string;
+        large: string;
+        wide: string;
+      };
+      agent: {
+        small: string;
+        bust: string;
+        full: string;
+        killfeed: string;
+      };
+    };
+    stats: PlayerStats;
+    economy: {
+      spent: {
+        overall: number;
+        average: number;
+      };
+      loadout_value: {
+        overall: number;
+        average: number;
+      };
+    };
+    damage_made: number;
+    damage_received: number;
+  }
+
+  export interface TeamData {
+    has_won: boolean;
+    rounds_won: number;
+    rounds_lost: number;
+  }
+  
+  export interface RoundData {
+    winning_team: string;
+    end_type: string;
+    bomb_planted: boolean;
+    bomb_defused: boolean;
+    plant_events: {
+      plant_site: string;
+    } | null;
+  }
+  
+  export interface DashboardData {
+    agentPickRates: ChartData[];
+    weaponUsage: ChartData[];
+    mapWinRates: BarChartData[];
+    playerStats: {
+      averageKills: number;
+      averageDeaths: number;
+      averageAssists: number;
+      averageScore: number;
+      headshot_percentage: number;
+      bodyshot_percentage: number;
+      legshot_percentage: number;
+    };
+    lastMatches: { result: 'WON' | 'LOSS' }[];
+  }
+
+  export interface BarChartData {
+    [key: string]: string | number;
   }
