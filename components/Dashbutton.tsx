@@ -49,7 +49,7 @@ export const DashButton = () => {
   return (
     <div>
       <motion.button
-        className="btn bg-[#fd4556] hover:bg-[#ff8f97] text-white font-extrabold text-lg px-6 py-3 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+        className="btn bg-[#fd4556] hover:bg-[#ff8f97] text-white font-extrabold text-lg  rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
         onClick={showModal}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}

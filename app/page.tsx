@@ -88,7 +88,7 @@ export default function Home() {
 
 
               {/* Call to Action Button */}
-              <div className="flex justify-center mt-3">
+              <div className="flex m-3">
                   <DashButton />
               </div>
             </div>
