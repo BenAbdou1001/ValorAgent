@@ -1,4 +1,4 @@
-  import { MatchData, DashboardData, FilterOptions, PlayerData, ChartData , BarChartData } from '../types/index';
+  import { MatchData, DashboardData, FilterOptions, PlayerData, ChartData , BarChartData , AbilityCasts  } from '../types/index';
   import axios from 'axios'
   import dotenv from 'dotenv';
   dotenv.config();
@@ -137,7 +137,7 @@ const calculateRankDistribution = (matches: MatchData[]): DashboardData['rankDis
   
     return {
       agentPickRates: calculateAgentPickRates(playerData),
-      weaponUsage: calculateWeaponUsage(playerData),
+      abilityUsage: calculateAbilityUsage(playerData),
       mapWinRates: calculateMapWinRates(filteredData, playerName, playerTag),
       playerStats: calculatePlayerStats(playerData),
       lastMatches: getLastMatchesResults(filteredData, playerName, playerTag),
@@ -172,18 +172,22 @@ const calculateAgentPickRates = (playerData: PlayerData[]): ChartData[] => {
   })).sort((a, b) => b.value - a.value);
 };
 
-const calculateWeaponUsage = (playerData: PlayerData[]): ChartData[] => {
-  // This would require additional data about weapon usage, which isn't provided in the current API response
-  // For now, we'll return placeholder data
-  return [
-    { name: 'Vandal', value: 35 },
-    { name: 'Phantom', value: 30 },
-    { name: 'Operator', value: 15 },
-    { name: 'Spectre', value: 10 },
-    { name: 'Sheriff', value: 5 },
-    { name: 'Others', value: 5 },
-  ];
+
+const calculateAbilityUsage = (playerData: PlayerData[]): AbilityCasts  => {
+  const totalAbilityCasts = playerData.reduce((acc, match) => {
+    if (match.ability_casts) {
+      acc.c_cast += match.ability_casts.c_cast || 0;
+      acc.q_cast += match.ability_casts.q_cast || 0;
+      acc.e_cast += match.ability_casts.e_cast || 0;
+      acc.x_cast += match.ability_casts.x_cast || 0;
+    }
+    return acc;
+  }, { c_cast: 0, q_cast: 0, e_cast: 0, x_cast: 0 });
+
+  return totalAbilityCasts;
 };
+
+
 
 const calculateMapWinRates = (matches: MatchData[], playerName: string, playerTag: string): BarChartData[] => {
   const mapStats: { [key: string]: { wins: number; total: number } } = {};

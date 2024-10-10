@@ -14,6 +14,7 @@ import { AgentsContent } from './AgentsContent';
 import { WeaponsContent } from './WeaponsContent';
 import { MapsContent } from './MapContent';
 import { HeadshotPercentageChart } from './HeadshotPercentageChart';
+import { AbilityUsageChart } from './AbilityUsageChart';
 
 export function DashboardClient({
   initialFilters
@@ -26,7 +27,12 @@ export function DashboardClient({
   const [filters, setFilters] = useState<FilterOptions>(initialFilters);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     agentPickRates: [],
-    weaponUsage: [],
+    abilityUsage: {
+      c_cast: 0,
+      q_cast: 0,
+      e_cast: 0,
+      x_cast: 0
+    },
     mapWinRates: [],
     playerStats: {
       averageKills: 0,
@@ -124,12 +130,12 @@ export function DashboardClient({
             <div className="h-full w-full flex bg-[#171717] p-6 rounded-lg shadow-md">
               <span className="loading loading-bars loading-lg justify-center items-center m-auto"></span>
             </div>
-          ) : data.weaponUsage && data.weaponUsage.length > 0 ? (
-            <Chart title="Weapon Usage" data={data.weaponUsage} />
+          ) : data.abilityUsage && data.abilityUsage.c_cast > 0 && data.abilityUsage.e_cast > 0 && data.abilityUsage.q_cast > 0 && data.abilityUsage.x_cast > 0 ? (
+            <AbilityUsageChart abilityCasts={data.abilityUsage} />
           ) : (
             <div className="bg-[#171717] p-6 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Weapon Usage</h3>
-              <p className="text-[#fffbf5]">No weapon usage data available</p>
+              <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">Ability Usage</h3>
+              <p className="text-[#fffbf5]">No Ability usage data available</p>
             </div>
           )
         }

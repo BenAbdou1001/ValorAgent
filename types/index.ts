@@ -2,6 +2,15 @@ export interface ChartData {
     name: string;
     value: number;
   }
+
+
+  
+export interface AbilityCasts {
+  c_cast: number;
+  q_cast: number;
+  e_cast: number;
+  x_cast: number;
+}
   
   export interface BarChartData {
     map: string;
@@ -22,7 +31,7 @@ export interface ChartData {
   
   export interface DashboardData {
     agentPickRates: ChartData[];
-    weaponUsage: ChartData[];
+    abilityUsage: AbilityCasts;
     mapWinRates: BarChartData[];
     playerStats: {
       averageKills: number;
@@ -123,6 +132,7 @@ export interface FilterOptions {
     bodyshots: number;
     headshots: number;
     legshots: number;
+    weaponsUsed: string[]; // Array of weapon names used in the match
   }
   export interface PlayerData {
     name: string;
@@ -199,21 +209,6 @@ export interface FilterOptions {
     } | null;
   }
   
-  export interface DashboardData {
-    agentPickRates: ChartData[];
-    weaponUsage: ChartData[];
-    mapWinRates: BarChartData[];
-    playerStats: {
-      averageKills: number;
-      averageDeaths: number;
-      averageAssists: number;
-      averageScore: number;
-      headshot_percentage: number;
-      bodyshot_percentage: number;
-      legshot_percentage: number;
-    };
-    lastMatches: { result: 'WON' | 'LOSS' }[];
-  }
 
   export interface BarChartData {
     [key: string]: string | number;
