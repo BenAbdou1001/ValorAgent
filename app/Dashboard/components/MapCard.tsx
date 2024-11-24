@@ -1,7 +1,3 @@
-import Image from 'next/image'
-import {MapCardProps} from '../../../types/index'
-
-
 interface ValorantCardProps {
   name: string;
   image: string;

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useSearchParams from Next.js
-import { Search, Filter, Menu, X } from 'lucide-react';
+import { Filter, Menu, X } from 'lucide-react';
 import { SideNavigation } from './SideNavigation';
-import { FilterOptions, DashboardData, GameMode, TimeRange, DashboardClientProps, GameCount  } from '../../../types/index';
+import { FilterOptions, DashboardData, GameMode, DashboardClientProps, GameCount  } from '../../../types/index';
 import { processApiData, fetchMatchData, formatDecimal, roundNumber } from '../../../utils/index';
 import { Card } from './Card';
 import { Chart } from './Chart';
@@ -21,7 +21,6 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const searchParams = useSearchParams(); // Use the useSearchParams hook
   const query = searchParams?.get('query') || ''; // Get the query parameter
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('home');
   
   const [filters, setFilters] = useState<FilterOptions>(initialFilters);
@@ -48,9 +47,7 @@ export function DashboardClient({
     rankDistribution: [],
   });
   const [isSideNavOpen, setIsSideNavOpen] = useState(true);
-  const [accountName, setAccountName] = useState(''); // New state for accountName
-  const [region, setRegion] = useState('');
-  const [tagname, setTagname] = useState('');
+
   const [loading , setLoading] = useState(true);
 
   const toggleSideNav = () => {
@@ -62,9 +59,6 @@ export function DashboardClient({
     const nameFromQuery = searchParams?.get('accountName') || '';
     const regionFromQuery = searchParams?.get('region') || '';
     const tagFromQuery = searchParams?.get('tagName') || '';
-    setAccountName(nameFromQuery);
-    setRegion(regionFromQuery);
-    setTagname(tagFromQuery);
     setFilters(newFilters);
     setLoading(true);
 
@@ -198,14 +192,10 @@ export function DashboardClient({
 
   useEffect(() => {
     const fetchData = async () => {
-      setSearchQuery(query);
       setLoading(true);
       const nameFromQuery = searchParams?.get('accountName') || '';
       const regionFromQuery = searchParams?.get('region') || '';
       const tagFromQuery = searchParams?.get('tagName') || '';
-      setAccountName(nameFromQuery);
-      setRegion(regionFromQuery);
-      setTagname(tagFromQuery);
 
       try {
         const matchData = await fetchMatchData(regionFromQuery, nameFromQuery, tagFromQuery);

@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { ValorantModal } from './ValorantModal';
 import { WeaponCard } from './WeaponCard';
+import {Weapon} from '../../../types';
 
 export function WeaponsContent() {
   const [weapons, setWeapons] = useState([]);
-  const [selectedWeapon, setSelectedWeapon] = useState(null);
+  const [selectedWeapon, setSelectedWeapon] = useState<Weapon | null>(null);
 
   useEffect(() => {
     const fetchWeapons = async () => {
@@ -22,7 +23,7 @@ export function WeaponsContent() {
       <div className="p-4">
         <h2 className="text-2xl font-bold text-white mb-4">Weapons</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {weapons.map((weapon: any) => (
+          {weapons.map((weapon: Weapon) => (
             <WeaponCard
               key={weapon.uuid}
               name={weapon.displayName}

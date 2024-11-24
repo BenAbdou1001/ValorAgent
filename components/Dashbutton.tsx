@@ -5,12 +5,18 @@ import { useRouter } from 'next/navigation';
 import * as motion from "framer-motion/client";
 import { fetchAccountData } from '../utils'; // Import your function
 
+interface AccountInfo {
+  name: string;
+  account_level: number;
+  region: string;
+  tag: string;
+}
+
 export const DashButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accountName, setAccountName] = useState('');
   const [tagName, setTagName] = useState('');
   const [error, setError] = useState('');
-  const [accountData, setAccountData] = useState({}); // New state to store fetched data
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const router = useRouter();
 
@@ -27,10 +33,8 @@ export const DashButton = () => {
     
     try {
       setIsLoading(true); // Start loading
-      const data: any = await fetchAccountData(accountName, tagName); // Fetch account data
-      
+      const data: { accountInfo: AccountInfo } = await fetchAccountData(accountName, tagName);
       if (data) {
-        setAccountData(data); // Store the data in state  
         console.log(data); // Log the fetched data instead of the state
         setIsLoading(false); // Stop loading
         localStorage.setItem('accountData', JSON.stringify(data)); // Use 'data' directly to store in localStorage

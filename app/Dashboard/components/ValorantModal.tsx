@@ -1,8 +1,28 @@
 import React from 'react';
-import Image from 'next/image';
 
+interface abilities {
+  slot: string;
+  displayName: string;
+  description: string;
+}
+interface weaponStats {
+  fireRate: number;
+  magazineSize: number;
+  reloadTimeSeconds: number;
+}
 interface ValorantModalProps {
-  data: any;
+  data: {
+    displayName?: string;
+    fullPortrait?: string;
+    displayIcon?: string;
+    splash?: string;
+    description?: string;
+    abilities?: abilities[];
+    weaponStats?: weaponStats;
+    category?: string;
+    coordinates?: string;
+    tacticalDescription?: string;
+  };
   type: 'agent' | 'weapon' | 'map';
   onClose: () => void;
 }
@@ -32,7 +52,7 @@ export function ValorantModal({ data, type, onClose }: ValorantModalProps) {
                 {data?.abilities && (
                   <>
                     <h3 className="text-xl font-bold text-white mt-4 mb-2">Abilities:</h3>
-                    {data.abilities.map((ability: any) => (
+                    {data.abilities.map((ability: abilities) => (
                       <div key={ability.slot} className="mb-2">
                         <h4 className="text-lg font-semibold text-white">{ability.displayName}</h4>
                         <p className="text-white">{ability.description}</p>

@@ -1,7 +1,6 @@
 'use client'
 
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { BarChartData } from '@/types/index'
 import { BarChartProps } from '@/types/index'
 import { getDataKey } from '@/utils/index'
 import { COLORS } from '../../../constants/index'

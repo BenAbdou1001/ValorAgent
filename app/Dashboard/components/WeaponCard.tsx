@@ -1,6 +1,3 @@
-import Image from 'next/image'
-import {WeaponCardProps} from '../../../types/index'
-
 interface ValorantCardProps {
   name: string;
   image: string;

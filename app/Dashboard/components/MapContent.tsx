@@ -3,10 +3,11 @@
 import React, { useState, useEffect } from 'react';
 import { ValorantModal } from './ValorantModal';
 import { MapCard } from './MapCard';
+import { Map } from '../../../types';
 
 export function MapsContent() {
   const [maps, setMaps] = useState([]);
-  const [selectedMap, setSelectedMap] = useState(null);
+  const [selectedMap, setSelectedMap] = useState<Map | null>(null);
 
   useEffect(() => {
     const fetchMaps = async () => {
@@ -22,7 +23,7 @@ export function MapsContent() {
       <div className="p-4">
         <h2 className="text-2xl font-bold text-white mb-4">Maps</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {maps.map((map: any) => (
+          {maps.map((map: Map) => (
             <MapCard
               key={map.uuid}
               name={map.displayName}
