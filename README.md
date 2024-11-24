@@ -1,6 +1,7 @@
 # 🎯 ValorAgent
 
 ValorAgent is a project designed to enhance the gaming experience in *Valorant* by providing data, analytics, and insights. This project aims to create a robust agent that interacts with *Valorant*'s data, offering statistics and analysis to improve performance and strategy. Data is gathered at runtime, ensuring the latest information is available whenever needed.
+
 ![ValorAgent Banner](./ValorAgent.webp)
 
 ## 🌟 Features
