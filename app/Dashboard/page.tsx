@@ -11,6 +11,7 @@ export default async function DashboardPage() {
 
   // You can pass the fetched data directly to the client component
   return (
+    
     <DashboardClient
       initialFilters={initialFilters}
     />
