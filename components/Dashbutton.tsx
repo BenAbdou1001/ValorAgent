@@ -67,59 +67,66 @@ export const DashButton = () => {
             transition={{ duration: 0.3 }}
             className="bg-[#1a0a0e] text-white p-8 rounded-lg shadow-xl max-w-md w-full"
           >
-            <h3 className="font-bold text-2xl mb-4 text-[#fd4556]">Agent Registration</h3>
-            <p className="mb-6 text-[#fffbf5]">Enter your Valorant credentials to access the dashboard.</p>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="accountName" className="block text-sm font-medium text-[#fffbf5] mb-1">
-                  Account Name
-                </label>
-                <input
-                  type="text"
-                  id="accountName"
-                  value={accountName}
-                  onChange={(e) => setAccountName(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#2f2325] border border-[#53212b] rounded-md text-[#fffbf5] focus:outline-none focus:ring-2 focus:ring-[#fd4556]"
-                  required
-                  placeholder="Enter your account name"
-                />
+            {isLoading ? (
+              <div className="h-full w-full flex justify-center items-center">
+                <span className="loading loading-bars loading-lg"></span>
               </div>
+            ) : (
+              <>
+                <h3 className="font-bold text-2xl mb-4 text-[#fd4556]">Agent Registration</h3>
+                <p className="mb-6 text-[#fffbf5]">Enter your Valorant credentials to access the dashboard.</p>
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <label htmlFor="accountName" className="block text-sm font-medium text-[#fffbf5] mb-1">
+                      Account Name
+                    </label>
+                    <input
+                      type="text"
+                      id="accountName"
+                      value={accountName}
+                      onChange={(e) => setAccountName(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#2f2325] border border-[#53212b] rounded-md text-[#fffbf5] focus:outline-none focus:ring-2 focus:ring-[#fd4556]"
+                      required
+                      placeholder="Enter your account name"
+                    />
+                  </div>
 
-              <div>
-                <label htmlFor="tagName" className="block text-sm font-medium text-[#fffbf5] mb-1">
-                  Tag Name
-                </label>
-                <input
-                  type="text"
-                  id="tagName"
-                  value={tagName}
-                  onChange={(e) => setTagName(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#2f2325] border border-[#53212b] rounded-md text-[#fffbf5] focus:outline-none focus:ring-2 focus:ring-[#fd4556]"
-                  required
-                  placeholder="Enter your tag name"
-                />
-              </div>
+                  <div>
+                    <label htmlFor="tagName" className="block text-sm font-medium text-[#fffbf5] mb-1">
+                      Tag Name
+                    </label>
+                    <input
+                      type="text"
+                      id="tagName"
+                      value={tagName}
+                      onChange={(e) => setTagName(e.target.value)}
+                      className="w-full px-3 py-2 bg-[#2f2325] border border-[#53212b] rounded-md text-[#fffbf5] focus:outline-none focus:ring-2 focus:ring-[#fd4556]"
+                      required
+                      placeholder="Enter your tag name"
+                    />
+                  </div>
 
-              {error && <p className="text-[#fd4556] text-sm">{error}</p>}
-              {isLoading && <p className="text-[#fd4556] text-sm">Loading...</p>} {/* Show loading state */}
+                  {error && <p className="text-[#fd4556] text-sm">The account name does not exist, or the tag name is incorrect.</p>}
 
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={hideModal}
-                  className="px-4 py-2 bg-[#2f2325] text-[#fffbf5] rounded-md hover:bg-[#53212b] transition duration-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[#fd4556] text-white rounded-md hover:bg-[#ff8f97] transition duration-300"
-                >
-                  Access Dashboard
-                </button>
-              </div>
-            </form>
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      type="button"
+                      onClick={hideModal}
+                      className="px-4 py-2 bg-[#2f2325] text-[#fffbf5] rounded-md hover:bg-[#53212b] transition duration-300"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-[#fd4556] text-white rounded-md hover:bg-[#ff8f97] transition duration-300"
+                    >
+                      Access Dashboard
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </motion.div>
         </div>
       )}
