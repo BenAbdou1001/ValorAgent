@@ -1,13 +1,24 @@
-'use client'
+import React from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
-import { ChartProps } from '@/types/index'
-import { COLORS } from '../../../constants/index'
+interface HeadshotPercentageChartProps {
+  headshotPercentage: number;
+  bodyshotPercentage: number;
+  legshotPercentage: number;
+}
 
-export function Chart({ title, data }: ChartProps) {
+const COLORS = ['#fd4556', '#53212b', '#171717'];
+
+export function HeadshotPercentageChart({ headshotPercentage, bodyshotPercentage, legshotPercentage }: HeadshotPercentageChartProps) {
+  const data = [
+    { name: 'Headshots', value: Math.round(headshotPercentage) },
+    { name: 'Bodyshots', value: Math.round(bodyshotPercentage) },
+    { name: 'Legshots', value: Math.round(legshotPercentage) },
+  ];
+
   return (
     <div className="bg-[#171717] p-6 rounded-lg shadow-md">
-      <h3 className="text-xl font-semibold text-[#fffbf5] mb-4 uppercase tracking-wide">{title}</h3>
+      <h3 className="text-xl font-semibold text-[#fffbf5] mb-4">Shot Distribution</h3>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
@@ -26,17 +37,17 @@ export function Chart({ title, data }: ChartProps) {
           </Pie>
           <Tooltip
             contentStyle={{ backgroundColor: '#171717', border: '1px solid #53212b' }}
-            itemStyle={{ color: '#fffbf5', fontFamily: "'Barlow Condensed', sans-serif" }}
+            itemStyle={{ color: '#fffbf5' }}
             formatter={(value: number) => `${value}%`}
           />
           <Legend
             layout="horizontal"
             verticalAlign="bottom"
             align="center"
-            wrapperStyle={{ color: '#fffbf5', fontFamily: "'Barlow Condensed', sans-serif" }}
+            wrapperStyle={{ color: '#fffbf5' }}
           />
         </PieChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

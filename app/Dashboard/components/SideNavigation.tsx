@@ -1,26 +1,30 @@
 'use client'
-import Image from "next/image";
-import { Home, Users, Crosshair, UserCircle } from 'lucide-react'
-import { SIDE_NAV_ITEMS } from '../../../constatns/index'
-import { SideNavigationProps } from '@/types/index'
-import Logo from '../../../public/Logo-removebg-preview.png'
 
-const iconMap = {
-  Home,
-  Users,
-  Crosshair,
-  UserCircle,
+import { Home, Users, Crosshair, Map } from 'lucide-react'
+import Image from 'next/image';
+import imgs from '@public/Logo-removebg-preview.png'
+interface SideNavigationProps {
+  isOpen: boolean;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
 }
+
+const SIDE_NAV_ITEMS = [
+  { id: 'home', name: 'Home', icon: Home },
+  { id: 'agents', name: 'Agents', icon: Users },
+  { id: 'weapons', name: 'Weapons', icon: Crosshair },
+  { id: 'maps', name: 'Maps', icon: Map },
+]
 
 export function SideNavigation({ isOpen, activeTab, setActiveTab }: SideNavigationProps) {
   return (
     <nav className={`${isOpen ? 'w-64' : 'w-0'} bg-[#171717] rounded-r-3xl shadow-md overflow-hidden transition-all duration-300 ease-in-out`}>
       <div className="p-6">
-        <Image src={Logo} alt="Valoragent Logo" className="w-full h-auto" />
+        <Image src={imgs} alt="Valoragent Logo" className="w-full h-auto" />
       </div>
       <ul className="mt-6">
         {SIDE_NAV_ITEMS.map((item) => {
-          const Icon = iconMap[item.icon as keyof typeof iconMap]
+          const Icon = item.icon
           return (
             <li key={item.id}>
               <button

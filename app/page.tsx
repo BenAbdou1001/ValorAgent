@@ -2,6 +2,7 @@ import Image from "next/image";
 import background from '@public/wallpaperflare.com_wallpaper.jpg';
 import Logo from '@public/favicon-removebg-preview.png';
 import * as motion from "framer-motion/client";
+import { DashButton } from "../components/Dashbutton";
 
 export default function Home() {
   return (
@@ -87,20 +88,8 @@ export default function Home() {
 
 
               {/* Call to Action Button */}
-              <div className="flex justify-center mt-3">
-                <motion.a
-                  href="/Dashboard"
-                  className="inline-block bg-red-600 px-6 py-3 text-center text-lg font-extrabold text-white shadow-lg hover:bg-red-700 transition duration-300 rounded-lg"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{
-                    duration: 0.1,
-                    delay: 1.2,
-                    ease: "easeInOut"
-                  }}
-                >
-                  Go to Dashboard
-                </motion.a>
+              <div className="flex m-3">
+                  <DashButton />
               </div>
             </div>
           </div>
