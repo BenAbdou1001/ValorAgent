@@ -6,9 +6,8 @@ import { DashButton } from "../components/Dashbutton";
 
 export default function Home() {
   return (
-    <div className="h-full font-barlow-condensed">
       <header>
-        <div className="relative h-full bg-cover bg-center">
+        <div className="relative min-h-screen bg-center bg-red-500/10">
           {/* Background Image */}
           <Image
             src={background}
@@ -33,7 +32,7 @@ export default function Home() {
               <Image
                 src={Logo}
                 alt="Logo"
-                className="h-72 w-auto mx-auto"  // Adjusted logo size
+                className="h-72 w-auto mx-auto"
               />
             </motion.div>
 
@@ -69,7 +68,7 @@ export default function Home() {
                     delay: 0.7,
                     ease: "easeInOut"
                   }}
-                  >
+                >
                   Track Your Valorant Performance
                 </motion.h1>
                 <motion.p 
@@ -81,11 +80,10 @@ export default function Home() {
                     delay: 0.9,
                     ease: "easeInOut"
                   }}
-                  >
+                >
                   Get real-time stats, analyze your past matches, and improve your gameplay with data-driven insights. ValorAgent helps you become the best player you can be.
                 </motion.p>
               </div>
-
 
               {/* Call to Action Button */}
               <div className="flex m-3">
@@ -95,6 +93,5 @@ export default function Home() {
           </div>
         </div>
       </header>
-    </div>
   );
 }
